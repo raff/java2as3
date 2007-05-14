@@ -20,7 +20,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     this.env = env;
   }
 
-  public DefaultJavaPrettyPrinter scan(CtTypeReference t) {
+  public AS3Printer scan(CtTypeReference t) {
     if (t != null) {
       t = ReplaceUtil.replaceType(env, t);
       t.accept(this);
@@ -33,7 +33,10 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	 */
   public <T> AS3Printer writeLocalVariable(CtLocalVariable<T> localVariable) {
     writeModifiers(localVariable);
-    write(" var ");
+    if (localVariable.hasModifier(ModifierKind.FINAL))
+      write("const ");
+    else
+      write("var ");
     write(localVariable.getSimpleName());
     write(":");
     scan(localVariable.getType());
@@ -90,6 +93,10 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   public <T> void visitCtField(CtField<T> f) {
     visitCtNamedElement(f);
+    if (f.hasModifier(ModifierKind.FINAL))
+      write("const ");
+    else
+      write("var ");
     write(f.getSimpleName());
     write(":");
     scan(f.getType());
@@ -134,5 +141,14 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       write(" ");
     }
     scan(c.getBody());
+  }
+
+  public AS3Printer writeModifiers(CtModifiable m) {
+    for (ModifierKind mod : m.getModifiers()) {
+      String smod = mod.toString().toLowerCase();
+      if (! "final".equals(smod))
+         write(smod + " ");
+    }
+    return this;
   }
 }
