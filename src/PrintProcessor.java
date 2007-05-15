@@ -15,7 +15,17 @@ public class PrintProcessor extends AbstractProcessor<CtClass> {
     public void process(CtClass c) {
         
 	AS3Printer printer = new AS3Printer(getEnvironment());
+	String packageName = c.getPackage().getQualifiedName();
+
+	printer.write("package " + packageName + " {");
+	printer.incTab().writeln();
+
 	printer.scan(c);
+
+	printer.decTab().writeln();
+	printer.write("}");
+
 	System.out.println(printer.toString());
+
     }
 }
