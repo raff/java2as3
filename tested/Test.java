@@ -38,9 +38,23 @@ public class Test
 
   }
 
-  public void params(String... p) {
+  final public void params(String... p) {
 	// do something
-	throw new RuntimeException("something bad");
+	try
+	{
+		if (p.length < 10)
+		throw new RuntimeException("something bad");
+	} catch(Exception e) {
+		throw new RuntimeException(e);
+	} finally {
+		System.out.println("goodbye");
+	}
   }
+
+  private char nullchar = '0';
+
+  private Integer ii = new Integer(23);
+  private Float ff = new Float(3.14);
+  private Double dd = new Double(ff);
 
 }

@@ -1,5 +1,5 @@
 package test;
 
-public abstract class Another
+final public abstract class Another
 {
 }

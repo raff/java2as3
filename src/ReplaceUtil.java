@@ -10,11 +10,25 @@ public class ReplaceUtil
   static final Map<Class, String> typesMap = new HashMap();
 
   static {
+	/**
+	 * Primitive types
+	 */
     typesMap.put(boolean.class,             "Boolean");
     typesMap.put(double.class,              "Number");
     typesMap.put(float.class,               "Number");
+    typesMap.put(char.class,                "String");
+	/**
+	 * Basic types
+	 */
+    typesMap.put(java.lang.Boolean.class,   "Boolean");
+    typesMap.put(java.lang.Integer.class,   "int");
+    typesMap.put(java.lang.Float.class,     "Number");
+    typesMap.put(java.lang.Double.class,    "Number");
     typesMap.put(java.lang.String.class,    "String");
     typesMap.put(java.lang.Object.class,    "Object");
+	/**
+	 * Complex types
+	 */
     typesMap.put(java.lang.Throwable.class, "Error");
     typesMap.put(java.util.Date.class,      "Date");
     typesMap.put(java.util.Map.class,       "Object");
@@ -34,11 +48,14 @@ public class ReplaceUtil
       if (asName != null)
 	t = f.Type().createReference(asName);
       else {
-        for (Class jc : typesMap.keySet())
+        for (Class jc : typesMap.keySet()) {
+	  if (jc == Object.class) // everything is a subclass of Object
+	    continue;
 	  if (t.isSubtypeOf(f.Type().createReference(jc))) {
 	    t = f.Type().createReference(typesMap.get(jc));
             break;
           }
+        }
       }
     }
 

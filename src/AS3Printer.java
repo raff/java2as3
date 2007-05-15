@@ -32,11 +32,13 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	 * Print local variable
 	 */
   public <T> AS3Printer writeLocalVariable(CtLocalVariable<T> localVariable) {
-    writeModifiers(localVariable);
-    if (localVariable.hasModifier(ModifierKind.FINAL))
-      write("const ");
-    else
-      write("var ");
+    if (! (localVariable.getParent() instanceof CtCatch)) {
+      writeModifiers(localVariable);
+      if (localVariable.hasModifier(ModifierKind.FINAL))
+        write("const ");
+      else
+        write("var ");
+    }
     write(localVariable.getSimpleName());
     write(":");
     scan(localVariable.getType());
@@ -146,7 +148,8 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   public AS3Printer writeModifiers(CtModifiable m) {
     for (ModifierKind mod : m.getModifiers()) {
       String smod = mod.toString().toLowerCase();
-      if (! "final".equals(smod))
+      if (m instanceof CtMethod || m instanceof CtClass
+      || ! "final".equals(smod))
          write(smod + " ");
     }
     return this;
