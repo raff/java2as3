@@ -57,4 +57,8 @@ public class Test
   private Float ff = new Float(3.14);
   private Double dd = new Double(ff);
 
+  private int another(Float x)
+  {
+    return (int) ((float) ((int) x));
+  }
 }

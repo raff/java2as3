@@ -14,6 +14,7 @@ import java.util.*;
 public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   private Environment env;
+  Stack<CtExpression> parenthesedExpression = new Stack<CtExpression>();
 
   AS3Printer(Environment env) {
     super(env);
@@ -153,5 +154,55 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
          write(smod + " ");
     }
     return this;
+  }
+
+  private boolean shouldSetBracket(CtExpression<?> e) {
+    if (e.getTypeCasts().size() != 0)
+      return true;
+    if (e.getParent() instanceof CtBinaryOperator
+    || e.getParent() instanceof CtUnaryOperator)
+      return e instanceof CtTargetedExpression
+	|| e instanceof CtAssignment || e instanceof CtConditional
+	|| e instanceof CtUnaryOperator;
+    if (e.getParent() instanceof CtTargetedExpression)
+      return e instanceof CtBinaryOperator || e instanceof CtAssignment
+	|| e instanceof CtConditional;
+
+    return false;
+  }
+
+  /**
+   * Enters an expression.
+   */
+  protected void enterCtExpression(CtExpression<?> e) {
+    /*
+    if (e.getPosition() != null) {
+      lineNumberMapping.put(line, e.getPosition().getLine());
+    }
+    */
+    if (shouldSetBracket(e)) {
+      parenthesedExpression.push(e);
+    }
+
+    if (!e.getTypeCasts().isEmpty()) {
+      for (CtTypeReference r : e.getTypeCasts()) {
+	write("(");
+      }
+    }
+  }
+
+  /**
+   * Exits an expression.
+   */
+  protected void exitCtExpression(CtExpression<?> e) {
+    while (parenthesedExpression.size() > 0
+      && e.equals(parenthesedExpression.peek())) {
+      parenthesedExpression.pop();
+      for (CtTypeReference r : e.getTypeCasts()) {
+        write(" as ");
+        scan(r);
+        write(")");
+      }
+    }
   }
 }
