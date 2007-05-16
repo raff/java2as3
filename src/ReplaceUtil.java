@@ -44,6 +44,16 @@ public class ReplaceUtil
     typesMap.put(java.util.Hashtable.class, "Object");
   }
 
+  static String replaceClass(Class c)
+  {
+System.out.println("replaceClass " + c.getName());
+    String name = typesMap.get(c);
+    if (null == name)
+      name = c.getName();
+
+    return name;
+  }
+
   static CtTypeReference replaceType(Environment env, CtTypeReference t)
   {
     return replaceType(env.getFactory(), t);

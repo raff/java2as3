@@ -64,4 +64,12 @@ public class Test
     int z[] = { 0 };
     return (int) ((float) ((int) f));
   }
+
+  public long currentTime() { return System.currentTimeMillis(); }
+
+  public boolean isInteger(Object x)
+  {
+    boolean n = x instanceof Short;
+    return (x instanceof Integer) || n;
+  }
 }

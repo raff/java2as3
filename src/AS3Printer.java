@@ -1,5 +1,6 @@
 
 import spoon.processing.Environment;
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.*;
 import spoon.reflect.code.*;
 import spoon.reflect.visitor.*;
@@ -15,11 +16,15 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   private Environment env;
   Stack<CtExpression> parenthesedExpression = new Stack<CtExpression>();
+  Map<Integer, Integer> lineNumberMapping;
   boolean skipArray = false;
+
+  int line = 1;
 
   AS3Printer(Environment env) {
     super(env);
     this.env = env;
+    this.lineNumberMapping = super.getLineNumberMapping();
   }
 
   public AS3Printer scan(CtTypeReference t) {
@@ -71,7 +76,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       if (m.getBody().getPosition() != null
       && (m.getBody().getStatements().isEmpty() 
       || !(m.getBody().getStatements().get(m.getBody().getStatements().size() - 1) instanceof CtReturn))) {
-        //lineNumberMapping.put(line, m.getBody().getPosition().getEndLine());
+        lineNumberMapping.put(line, m.getBody().getPosition().getEndLine());
       }
     } else {
       write(";");
@@ -178,11 +183,9 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
    * Enters an expression.
    */
   protected void enterCtExpression(CtExpression<?> e) {
-    /*
     if (e.getPosition() != null) {
       lineNumberMapping.put(line, e.getPosition().getLine());
     }
-    */
     if (shouldSetBracket(e)) {
       parenthesedExpression.push(e);
     }
@@ -270,5 +273,25 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   public AS3Printer writeThrowsClause(CtExecutable<?> e) {
 	return this;
+  }
+
+  public <T> void visitCtLiteral(CtLiteral<T> literal) {
+    if (literal.getValue() instanceof CtTypeReference) {
+      enterCtExpression(literal);
+      scan((CtTypeReference) literal.getValue());
+      exitCtExpression(literal);
+    } else
+      super.visitCtLiteral(literal);
+  }
+
+  /**
+   * Writes a binary operator.
+   */
+  public AS3Printer writeOperator(BinaryOperatorKind o) {
+    if (o == BinaryOperatorKind.INSTANCEOF) 
+      write("typeof");
+    else
+      super.writeOperator(o);
+    return this;
   }
 }

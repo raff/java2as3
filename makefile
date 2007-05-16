@@ -1,6 +1,6 @@
 SRC=tested
 ARGS=-p Java2AS3Processor -i $(SRC) --no
-S=:
+S=;
 
 compile:
 	javac -cp "lib/spoon-1.2.jar" src/*.java
