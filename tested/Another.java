@@ -1,5 +1,5 @@
 package test;
 
-final public abstract class Another
+public abstract class Another extends java.util.HashMap
 {
 }

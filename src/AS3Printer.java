@@ -15,6 +15,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   private Environment env;
   Stack<CtExpression> parenthesedExpression = new Stack<CtExpression>();
+  boolean skipArray = false;
 
   AS3Printer(Environment env) {
     super(env);
@@ -134,6 +135,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       removeLastChar();
     }
     write(") ");
+/*
     if (c.getThrownTypes() != null && c.getThrownTypes().size() > 0) {
       write("throws ");
       for (CtTypeReference ref : c.getThrownTypes()) {
@@ -143,6 +145,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       removeLastChar();
       write(" ");
     }
+*/
     scan(c.getBody());
   }
 
@@ -204,5 +207,68 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
         write(")");
       }
     }
+  }
+
+  public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
+    /*
+    scan(reference.getComponentType());
+    if (!skipArray)
+      write("[]");
+    */
+
+    write("Array");
+    if (!skipArray) {
+      write(" /* ");
+      scan(reference.getComponentType());
+      write(" */");
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> void visitCtNewArray(CtNewArray<T> newArray) {
+    enterCtExpression(newArray);
+
+    CtTypeReference<?> ref = newArray.getType();
+
+    if (ref != null)
+      write("new ");
+
+    skipArray = true;
+    scan(ref);
+    skipArray = false;
+    if (newArray.getDimensionExpressions().size() != 0) {
+      for (int i = 0; ref instanceof CtArrayTypeReference; i++) {
+	write("(");
+	if (newArray.getDimensionExpressions().size() > i) {
+	  scan(newArray.getDimensionExpressions().get(i));
+	}
+	write(")");
+	ref = ((CtArrayTypeReference) ref).getComponentType();
+      }
+    }
+    
+    else {
+      write("( ");
+      for (CtExpression e : newArray.getElements()) {
+	scan(e);
+	write(" , ");
+      }
+      if (newArray.getElements().size() > 1) // this was > 0, but I want to
+	removeLastChar();		     // throw an error for size==1
+      write(" )");
+    }
+    exitCtExpression(newArray);
+  }
+
+  public AS3Printer writeExtendsClause(CtClass<?> c) {
+    if (c.getSuperclass() != null) {
+      write(" extends ");
+      scan(c.getSuperclass());
+    }
+    return this;
+  }
+
+  public AS3Printer writeThrowsClause(CtExecutable<?> e) {
+	return this;
   }
 }

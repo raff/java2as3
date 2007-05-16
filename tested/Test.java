@@ -57,8 +57,11 @@ public class Test
   private Float ff = new Float(3.14);
   private Double dd = new Double(ff);
 
-  private int another(Float x)
+  private int another(Float f)
   {
-    return (int) ((float) ((int) x));
+    int x[] = new int[22][22];
+    int y[] = { 1, 2, 3};
+    int z[] = { 0 };
+    return (int) ((float) ((int) f));
   }
 }

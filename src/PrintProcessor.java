@@ -6,6 +6,8 @@ import spoon.reflect.visitor.*;
 import spoon.reflect.code.*;
 import spoon.support.*;
 
+import java.io.*;
+
 /**
  * This processor replaces variable (local variables, parameters and fields)
  * declarations with a J2ME compliant equivalent declaration.
@@ -17,7 +19,12 @@ public class PrintProcessor extends AbstractProcessor<CtClass> {
 	AS3Printer printer = new AS3Printer(getEnvironment());
 	String packageName = c.getPackage().getQualifiedName();
 
-	printer.write("package " + packageName + " {");
+	if (packageName.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME))
+	  packageName = ""; // no package name
+	else
+	  packageName += " ";
+
+	printer.write("package " + packageName + "{");
 	printer.incTab().writeln();
 
 	printer.scan(c);
@@ -25,7 +32,28 @@ public class PrintProcessor extends AbstractProcessor<CtClass> {
 	printer.decTab().writeln();
 	printer.write("}");
 
-	System.out.println(printer.toString());
+	String classname = c.getQualifiedName();
+	System.out.println(classname + "...");
+	try {
+	  FileWriter fw = new FileWriter(classfile(classname));
+	  fw.write(printer.toString());
+	  fw.flush();
+	  fw.close();
+        } catch(Exception e) {
+	  System.out.println("error writing: " + e.getMessage());
+        }
+    }
 
+    private static final String outputFolder = "as3";
+    private static final String extension = ".as";
+
+    private File classfile(String className)
+    {
+	className = outputFolder 
+		+ "/" + className.replaceAll("\\.", "/") 
+		+ extension;
+	File f = new File(className);
+	f.getParentFile().mkdirs();
+	return f;
     }
 }

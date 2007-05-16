@@ -16,12 +16,17 @@ public class ReplaceUtil
     typesMap.put(boolean.class,             "Boolean");
     typesMap.put(double.class,              "Number");
     typesMap.put(float.class,               "Number");
+    typesMap.put(long.class,                "Number");
+    typesMap.put(short.class,               "int");
     typesMap.put(char.class,                "String");
 	/**
 	 * Basic types
 	 */
     typesMap.put(java.lang.Boolean.class,   "Boolean");
+    typesMap.put(java.lang.Character.class, "String");
+    typesMap.put(java.lang.Short.class,     "int");
     typesMap.put(java.lang.Integer.class,   "int");
+    typesMap.put(java.lang.Long.class,      "Number");
     typesMap.put(java.lang.Float.class,     "Number");
     typesMap.put(java.lang.Double.class,    "Number");
     typesMap.put(java.lang.String.class,    "String");
@@ -30,8 +35,13 @@ public class ReplaceUtil
 	 * Complex types
 	 */
     typesMap.put(java.lang.Throwable.class, "Error");
+    typesMap.put(java.lang.Error.class,     "Error");
+    typesMap.put(java.lang.Exception.class, "Error");
+    typesMap.put(java.lang.RuntimeException.class, "Error");
     typesMap.put(java.util.Date.class,      "Date");
     typesMap.put(java.util.Map.class,       "Object");
+    typesMap.put(java.util.HashMap.class,   "Object");
+    typesMap.put(java.util.Hashtable.class, "Object");
   }
 
   static CtTypeReference replaceType(Environment env, CtTypeReference t)
@@ -39,40 +49,31 @@ public class ReplaceUtil
     return replaceType(env.getFactory(), t);
   }
 
-
   static CtTypeReference replaceType(Factory f, CtTypeReference t)
   {
     if (t != null) {
-      Class c = t.getActualClass();
-      String asName = typesMap.get(c);
+      String asName = null;
+
+      try {
+ 	Class c = t.getActualClass();
+        asName = typesMap.get(c);
+      } catch(Exception e) {
+	// follow through
+      }
+
       if (asName != null)
 	t = f.Type().createReference(asName);
-      else {
-        for (Class jc : typesMap.keySet()) {
-	  if (jc == Object.class) // everything is a subclass of Object
-	    continue;
-	  if (t.isSubtypeOf(f.Type().createReference(jc))) {
-	    t = f.Type().createReference(typesMap.get(jc));
-            break;
-          }
-        }
-      }
     }
 
     return t;
   }
 
+	/**
+	 * Uses Fragment api to replace code
+	 */
   static boolean replace(CtElement e, String replacement)
   {
-    if (null == e) {
-//System.out.println("replace element is null");
-	return false;
-    }
     SourcePosition pos = e.getPosition();
-    if (null == pos) {
-	System.out.println("replace position is null");
-	return false;
-    }
 
     int start = pos.getSourceStart();
     int length = pos.getSourceEnd() - pos.getSourceStart() + 1;
@@ -81,7 +82,6 @@ public class ReplaceUtil
 	new SourceCodeFragment(start, replacement, length);
 
     pos.getCompilationUnit().addSourceCodeFragment(fragment); 
-//  System.out.println("replaced > " + replacement);
     return true;
   }
 }

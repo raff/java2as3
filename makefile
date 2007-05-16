@@ -1,11 +1,13 @@
-ARGS=-p Java2AS3Processor -i tested -f --no
+SRC=tested
+ARGS=-p Java2AS3Processor -i $(SRC) --no
+S=:
 
 compile:
-	javac -cp "lib/spoon-1.2.jar;." src/*.java
+	javac -cp "lib/spoon-1.2.jar" src/*.java
 
 run:
-	rm -rf spooned
-	java -cp "lib/spoon-1.2.jar;src" spoon.Launcher $(ARGS)
+	rm -rf spooned as3
+	java -Xmx512M -cp "lib/spoon-1.2.jar$(S)src" spoon.Launcher $(ARGS)
 
 clean:
-	rm -rf src/*.class spooned
+	rm -rf src/*.class spooned as3
