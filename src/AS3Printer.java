@@ -364,4 +364,15 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     }
     return this;
   }
+
+  public <T> void visitCtAssert(CtAssert<T> asserted) {
+    enterCtStatement(asserted);
+    write("JAS.assert(");
+    scan(asserted.getAssertExpression());
+    if (asserted.getExpression() != null) {
+	write(", ");
+	scan(asserted.getExpression());
+    }
+    write(")");
+  }
 }
