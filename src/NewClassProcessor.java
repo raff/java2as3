@@ -1,7 +1,7 @@
 
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.*;
-import spoon.reflect.reference.*;
+import spoon.reflect.code.CtNewClass;
+import spoon.reflect.reference.CtTypeReference;
 
 public class NewClassProcessor extends AbstractProcessor<CtNewClass> {
 

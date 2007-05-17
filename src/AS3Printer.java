@@ -375,4 +375,11 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     }
     write(")");
   }
+/*
+  public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
+    enterCtExpression(variableAccess);
+    write("$").write(variableAccess.getVariable().getSimpleName());
+    exitCtExpression(variableAccess);
+  }
+*/
 }

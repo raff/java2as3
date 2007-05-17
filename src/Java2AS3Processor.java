@@ -17,6 +17,8 @@ public class Java2AS3Processor extends AbstractProcessor<CtClass> {
         super.init();
         
         ProcessingManager pm = getEnvironment().getManager();
+        pm.addProcessor( new VariableAccessProcessor() );
+        pm.addProcessor( new VariableProcessor() );
         pm.addProcessor( new NewClassProcessor() );
 
 	// must be last

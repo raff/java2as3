@@ -3,11 +3,13 @@ import spoon.processing.Environment;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.*;
+import spoon.reflect.code.*;
 import java.util.*;
 
 public class ReplaceUtil
 {
   static final Map<Class, String> typesMap = new HashMap();
+  static final Set<String> reservedWords = new HashSet();
 
   static {
 	/**
@@ -44,11 +46,16 @@ public class ReplaceUtil
     typesMap.put(java.util.Map.class,       "Object");
     typesMap.put(java.util.HashMap.class,   "Object");
     typesMap.put(java.util.Hashtable.class, "Object");
+
+	/**
+	 * Reserved words
+	 */
+    reservedWords.add("in");
+    reservedWords.add("is");
   }
 
   static String replaceClass(Class c)
   {
-System.out.println("replaceClass " + c.getName());
     String name = typesMap.get(c);
     if (null == name)
       name = c.getName();
@@ -78,6 +85,20 @@ System.out.println("replaceClass " + c.getName());
     }
 
     return t;
+  }
+
+  static boolean isReserved(String name)
+  {
+    return reservedWords.contains(name);
+  }
+
+  static void replaceName(CtNamedElement e)
+  {
+    if (e == null)
+	return;
+    String name = e.getSimpleName();
+    if (reservedWords.contains(name))
+      e.setSimpleName("jas$" + name);
   }
 
 	/**
