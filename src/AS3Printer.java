@@ -17,7 +17,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   private Environment env;
   Stack<CtExpression> parenthesedExpression = new Stack<CtExpression>();
   Map<Integer, Integer> lineNumberMapping;
-  boolean skipArray = false;
+  int skipArray = 0;
 
   int line = 1;
 
@@ -61,13 +61,16 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	 */
   public <T> void visitCtMethod(CtMethod<T> m) {
     visitCtNamedElement(m);
-    writeGenericsParameter(m.getFormalTypeParameters());
+
+    if (m.getReference().getOverridingExecutable() != null)
+      write("override ");
     write("function ");
     write(m.getSimpleName());
     write("(");
     writeExecutableParameters(m);
     write(")");
     write(":");
+    writeGenericsParameter(m.getFormalTypeParameters());
     scan(m.getType());
     //writeThrowsClause(m);
     if (m.getBody() != null) {
@@ -79,7 +82,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
         lineNumberMapping.put(line, m.getBody().getPosition().getEndLine());
       }
     } else {
-      write(";");
+      write(" { throw new Error(\"abstract\") };");
     }
   }
 
@@ -128,8 +131,8 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   public <T> void visitCtConstructor(CtConstructor<T> c) {
     visitCtNamedElement(c);
-    writeGenericsParameter(c.getFormalTypeParameters());
     write("function ");
+    writeGenericsParameter(c.getFormalTypeParameters());
     write(c.getDeclaringType().getSimpleName());
     write("(");
     if (c.getParameters().size() > 0) {
@@ -157,8 +160,18 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   public AS3Printer writeModifiers(CtModifiable m) {
     for (ModifierKind mod : m.getModifiers()) {
       String smod = mod.toString().toLowerCase();
-      if (m instanceof CtMethod || m instanceof CtClass
-      || ! "final".equals(smod))
+      if ("abstract".equals(smod)
+      || "synchronized".equals(smod)
+      || ("final".equals(smod)
+	  && !(m instanceof CtMethod 
+		|| m instanceof CtClass 
+		|| m instanceof CtField
+		|| m instanceof CtLocalVariable)))
+        write("/*" + smod + "*/ ");
+      else if ("final".equals(smod) 
+	&& (m instanceof CtLocalVariable || m instanceof CtField))
+	; // we are going to change var to const
+      else
          write(smod + " ");
     }
     return this;
@@ -220,10 +233,10 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     */
 
     write("Array");
-    if (!skipArray) {
-      write(" /* ");
+    if (skipArray <= 0) {
+      if (skipArray-- == 0) write(" /* "); else write(" ");
       scan(reference.getComponentType());
-      write(" */");
+      if (++skipArray == 0) write(" */");
     }
   }
 
@@ -236,9 +249,9 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     if (ref != null)
       write("new ");
 
-    skipArray = true;
+    skipArray++;
     scan(ref);
-    skipArray = false;
+    skipArray--;
     if (newArray.getDimensionExpressions().size() != 0) {
       for (int i = 0; ref instanceof CtArrayTypeReference; i++) {
 	write("(");
@@ -280,18 +293,69 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       enterCtExpression(literal);
       scan((CtTypeReference) literal.getValue());
       exitCtExpression(literal);
-    } else
+    } else if (literal.getValue() instanceof Long) {
+      write(literal.getValue().toString()); // + "L");
+    } else if (literal.getValue() instanceof Float) {
+      write(literal.getValue().toString()); // + "F");
+    } else {
       super.visitCtLiteral(literal);
+    }
   }
 
   /**
    * Writes a binary operator.
-   */
+   *
   public AS3Printer writeOperator(BinaryOperatorKind o) {
     if (o == BinaryOperatorKind.INSTANCEOF) 
       write("typeof");
     else
       super.writeOperator(o);
+    return this;
+  }
+    */
+
+  public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
+    enterCtExpression(operator);
+    boolean paren = operator.getParent() instanceof CtBinaryOperator
+		    || operator.getParent() instanceof CtUnaryOperator;
+    if (paren)
+      write("(");
+   
+    if (operator.getKind() != BinaryOperatorKind.INSTANCEOF) {
+      scan(operator.getLeftHandOperand());
+      write(" ").writeOperator(operator.getKind()).write(" ");
+      scan(operator.getRightHandOperand());
+    } else {
+      write("typeof(");
+      scan(operator.getLeftHandOperand());
+      write(") == \"");
+      scan(operator.getRightHandOperand());
+      write("\"");
+    }
+
+    if (paren)
+      write(")");
+    exitCtExpression(operator);
+  }
+
+  public AS3Printer writeHeader(List<CtSimpleType<?>> types) {
+    if (!types.isEmpty()) {
+      CtPackage pack = types.get(0).getPackage();
+      //scan(pack).writeln().writeln();
+      for (CtTypeReference<?> ref : getImports()) {
+	// ignore non-top-level type
+	if (ref.getPackage() != null) {
+	  // ignore java.lang package
+	  if (!ref.getPackage().getSimpleName().equals("java.lang"))
+	    // ignore type in same package
+	    if (!ref.getPackage().getSimpleName().equals(
+	      pack.getQualifiedName())) {
+	      write("import " + ref.getQualifiedName() + ";").writeln();
+	    }
+	}
+      }
+      writeln();
+    }
     return this;
   }
 }

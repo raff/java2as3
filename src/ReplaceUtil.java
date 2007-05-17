@@ -17,6 +17,7 @@ public class ReplaceUtil
     typesMap.put(double.class,              "Number");
     typesMap.put(float.class,               "Number");
     typesMap.put(long.class,                "Number");
+    typesMap.put(byte.class,                "int");
     typesMap.put(short.class,               "int");
     typesMap.put(char.class,                "String");
 	/**
@@ -24,6 +25,7 @@ public class ReplaceUtil
 	 */
     typesMap.put(java.lang.Boolean.class,   "Boolean");
     typesMap.put(java.lang.Character.class, "String");
+    typesMap.put(java.lang.Byte.class,      "int");
     typesMap.put(java.lang.Short.class,     "int");
     typesMap.put(java.lang.Integer.class,   "int");
     typesMap.put(java.lang.Long.class,      "Number");

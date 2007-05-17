@@ -7,6 +7,7 @@ import spoon.reflect.code.*;
 import spoon.support.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * This processor replaces variable (local variables, parameters and fields)
@@ -26,11 +27,8 @@ public class PrintProcessor extends AbstractProcessor<CtClass> {
 
 	printer.write("package " + packageName + "{");
 	printer.incTab().writeln();
-
-	printer.scan(c);
-
-	printer.decTab().writeln();
-	printer.write("}");
+	printer.calculate(c.getPosition().getCompilationUnit().getDeclaredTypes());
+	printer.decTab().writeln().write("}");
 
 	String classname = c.getQualifiedName();
 	System.out.println(classname + "...");

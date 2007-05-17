@@ -13,9 +13,10 @@ public class Test
 		something = "42";
 	}
 
-  // Constructor
-  Test(int one, String two, Object three) {}
-  private Test(Object... p) {}
+  // Constructors
+  public Test() {}
+  public Test(int one, String two, Object three) {}
+  //private Test(Object... p) {}
 
   public void noReturn(int a, int b, int c) {}
 
@@ -25,7 +26,7 @@ public class Test
   {
 	int one, two, three;
 	String s = "fortytwo";
-	long l, l1=1, l2=2;
+	long l, l1=1, l2=2, l3 = ~1L;
 
 	return o.toString();
   }
@@ -59,7 +60,7 @@ public class Test
 
   private int another(Float f)
   {
-    int x[] = new int[22][22];
+    int x[][] = new int[22][22];
     int y[] = { 1, 2, 3};
     int z[] = { 0 };
     return (int) ((float) ((int) f));
