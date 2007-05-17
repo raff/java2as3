@@ -60,10 +60,16 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	 * Print method definition
 	 */
   public <T> void visitCtMethod(CtMethod<T> m) {
-    visitCtNamedElement(m);
+    //System.out.println("visit method " + m.getSimpleName());
 
-    if (m.getReference().getOverridingExecutable() != null)
-      write("override ");
+    visitCtNamedElement(m);
+    try {
+      if (m.getReference().getOverridingExecutable() != null)
+        write("override ");
+    } catch(Exception e) {
+	System.out.println("  getOverride error: " + e.getMessage());
+    }
+
     write("function ");
     write(m.getSimpleName());
     write("(");

@@ -16,22 +16,27 @@ import java.util.*;
 public class PrintProcessor extends AbstractProcessor<CtClass> {
 
     public void process(CtClass c) {
-        
-	AS3Printer printer = new AS3Printer(getEnvironment());
-	String packageName = c.getPackage().getQualifiedName();
+	String classname = c.getQualifiedName();
+	if (classname.length() == 0) {
+	  System.out.println("  skipping anonymous class");
+	  return;
+	}
 
+	System.out.println(classname + "...");
+
+	String packageName = c.getPackage().getQualifiedName();
 	if (packageName.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME))
 	  packageName = ""; // no package name
-	else
+
+	if (packageName.length() > 0)
 	  packageName += " ";
 
+	AS3Printer printer = new AS3Printer(getEnvironment());
 	printer.write("package " + packageName + "{");
 	printer.incTab().writeln();
 	printer.calculate(c.getPosition().getCompilationUnit().getDeclaredTypes());
 	printer.decTab().writeln().write("}");
 
-	String classname = c.getQualifiedName();
-	System.out.println(classname + "...");
 	try {
 	  FileWriter fw = new FileWriter(classfile(classname));
 	  fw.write(printer.toString());
