@@ -13,16 +13,20 @@ import java.util.*;
  * This processor replaces variable (local variables, parameters and fields)
  * declarations with a J2ME compliant equivalent declaration.
  */
-public class PrintProcessor extends AbstractProcessor<CtClass> {
+public class PrintProcessor extends AbstractProcessor<CtSimpleType> {
 
-    public void process(CtClass c) {
-	String classname = c.getQualifiedName();
-	if (classname.length() == 0) {
-	  System.out.println("  skipping anonymous class");
+    public void process(CtSimpleType c) {
+        if (!c.isTopLevel())
 	  return;
-	}
 
-	System.out.println(classname + "...");
+	String classname = c.getQualifiedName();
+
+	if (c instanceof CtAnnotationType) {
+	  System.out.println("skipping annotation " + classname + "...");
+	  return;
+	} else {
+	  System.out.println(classname + "...");
+	}
 
 	String packageName = c.getPackage().getQualifiedName();
 	if (packageName.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME))
