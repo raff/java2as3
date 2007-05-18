@@ -28,4 +28,10 @@ class Test2 extends Test
 	for (String k : m.keySet())
 		System.out.println(k);
   }
+
+  public void testEach(java.util.AbstractMap<String, String> m)
+  {
+	for (String each : m.keySet())
+		System.out.println(each);
+  }
 }

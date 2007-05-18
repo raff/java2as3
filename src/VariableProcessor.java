@@ -11,6 +11,8 @@ public class VariableProcessor extends AbstractProcessor<CtVariable> {
 
     public void process(CtVariable v) {
         
-      ReplaceUtil.replaceName(v);
+      String name = v.getSimpleName();
+      if (ReplaceUtil.isReserved(name))
+        v.setSimpleName("jas$" + name);
     }
 }

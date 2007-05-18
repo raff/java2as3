@@ -92,15 +92,6 @@ public class ReplaceUtil
     return reservedWords.contains(name);
   }
 
-  static void replaceName(CtNamedElement e)
-  {
-    if (e == null)
-	return;
-    String name = e.getSimpleName();
-    if (reservedWords.contains(name))
-      e.setSimpleName("jas$" + name);
-  }
-
 	/**
 	 * Uses Fragment api to replace code
 	 */
