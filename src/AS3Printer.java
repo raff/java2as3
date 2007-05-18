@@ -90,7 +90,10 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
         lineNumberMapping.put(line, m.getBody().getPosition().getEndLine());
       }
     } else {
-      write(" { throw new Error(\"abstract\") };");
+      if (! (m.getParent() instanceof CtInterface))
+        write(" { throw new Error(\"abstract\") };");
+      else
+        write(";");
     }
   }
 
