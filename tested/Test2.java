@@ -23,4 +23,9 @@ class Test2 extends Test
     return get + 22 - set;
   }
 
+  public void testForeach(java.util.AbstractMap<String, String> m)
+  {
+	for (String k : m.keySet())
+		System.out.println(k);
+  }
 }

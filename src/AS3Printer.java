@@ -18,6 +18,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   Stack<CtExpression> parenthesedExpression = new Stack<CtExpression>();
   Map<Integer, Integer> lineNumberMapping;
   int skipArray = 0;
+  boolean noTypeDecl = false;
 
   int line = 1;
 
@@ -39,7 +40,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	 * Print local variable
 	 */
   public <T> AS3Printer writeLocalVariable(CtLocalVariable<T> localVariable) {
-    if (! (localVariable.getParent() instanceof CtCatch)) {
+    if (!noTypeDecl && !(localVariable.getParent() instanceof CtCatch)) {
       writeModifiers(localVariable);
       if (localVariable.hasModifier(ModifierKind.FINAL))
         write("const ");
@@ -382,4 +383,90 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     exitCtExpression(variableAccess);
   }
 */
+
+  public void visitCtFor(CtFor forLoop) {
+    enterCtStatement(forLoop);
+    write("for (");
+    List<CtStatement> st = forLoop.getForInit();
+    if (st.size() > 0) {
+      scan(st.get(0));
+    }
+    if (st.size() > 1) {
+      noTypeDecl = true;
+      for (int i = 1; i < st.size(); i++) {
+	write(", ");
+	scan(st.get(i));
+      }
+      noTypeDecl = false;
+    }
+    write(" ; ");
+    scan(forLoop.getExpression());
+    write(" ; ");
+    for (CtStatement s : forLoop.getForUpdate()) {
+      scan(s);
+      write(" , ");
+    }
+    if (forLoop.getForUpdate().size() > 0)
+      removeLastChar();
+    write(")");
+    if (forLoop.getBody() instanceof CtBlock) {
+      write(" ");
+      scan(forLoop.getBody());
+    } else {
+      incTab().writeln();
+      writeStatement(forLoop.getBody());
+      decTab();
+    }
+  }
+
+  public void visitCtForEach(CtForEach foreach) {
+    enterCtStatement(foreach);
+    write("for each (");
+    scan(foreach.getVariable());
+    write(" in ");
+    scan(foreach.getExpression());
+    write(")");
+
+    if (foreach.getBody() instanceof CtBlock) {
+      write(" ");
+      scan(foreach.getBody());
+    } else {
+      incTab().writeln();
+      writeStatement(foreach.getBody());
+      decTab();
+    }
+  }
+
+	/**
+	 * Writes a statement.
+	 */
+  protected void writeStatement(CtStatement e) {
+    scan(e);
+    if (!((e instanceof CtBlock) || (e instanceof CtIf)
+      || (e instanceof CtFor) || (e instanceof CtForEach)
+      || (e instanceof CtWhile) || (e instanceof CtTry)
+      || (e instanceof CtSwitch) || (e instanceof CtSynchronized)))
+      write(";");
+  }
+
+    /**
+     * Writes a generics parameter.
+     */
+  public AS3Printer writeGenericsParameter(
+    Collection<CtTypeReference<?>> params) {
+    if (params == null)
+      return this;
+    if ( params.size() > 0) {
+      write("/*");
+      //context.ignoreImport = true;
+      for (CtTypeReference param : params) {
+    scan(param);
+    write(", ");
+      }
+      //context.ignoreImport = false;
+      removeLastChar();
+      write("*/ ");
+    }
+    return this;
+  }
 }
