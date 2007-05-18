@@ -21,6 +21,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   boolean noTypeDecl = false;
 
   int line = 1;
+  int statics = 1;
 
   AS3Printer(Environment env) {
     super(env);
@@ -468,5 +469,25 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       write("*/ ");
     }
     return this;
+  }
+
+  public void visitCtAnonymousExecutable(CtAnonymousExecutable impl) {
+    writeAnnotations(impl);
+    writeModifiers(impl);
+    write("function jas$static" + (statics++) + "():void ");
+    impl.getBody().accept(this);
+  }
+
+  public void visitCtSynchronized(CtSynchronized synchro) {
+    enterCtStatement(synchro);
+    write("/* synchronized ");
+    if (synchro.getExpression() != null) {
+      removeLastChar();
+      write("(");
+      scan(synchro.getExpression());
+      write(") ");
+    }
+    write("*/ ");
+    scan(synchro.getBlock());
   }
 }
