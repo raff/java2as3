@@ -31,7 +31,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   public AS3Printer scan(CtTypeReference t) {
     if (t != null) {
-      t = ReplaceUtil.replaceType(env, t);
+      t = ReplaceUtil.replaceType(t);
       t.accept(this);
     }
     return this;
@@ -243,6 +243,13 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       write("[]");
     */
 
+    CtTypeReference cType = reference.getComponentType();
+    if (cType.getActualClass().equals(Byte.class)
+    || cType.getActualClass().equals(byte.class)) {
+       write("ByteArray");
+       return; 
+    }
+
     write("Array");
     if (skipArray <= 0) {
       if (skipArray-- == 0) write(" /* "); else write(" ");
@@ -253,9 +260,27 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   @SuppressWarnings("unchecked")
   public <T> void visitCtNewArray(CtNewArray<T> newArray) {
-    enterCtExpression(newArray);
 
     CtTypeReference<?> ref = newArray.getType();
+    CtTypeReference cType = ((CtArrayTypeReference) ref).getComponentType();
+
+    if (cType.getActualClass().equals(Byte.class)
+    || cType.getActualClass().equals(byte.class)) {
+      visitNewByteArray(newArray, ref);
+      return; 
+    }
+
+    if (newArray.getElements().size() == 1) {
+        enterCtExpression(newArray);
+	CtExpression e = newArray.getElements().get(0);
+	write("[ ");
+	scan(e);
+	write(" ] as Array");
+        exitCtExpression(newArray);
+	return;
+    }
+
+    enterCtExpression(newArray);
 
     if (ref != null)
       write("new ");
@@ -280,10 +305,37 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	scan(e);
 	write(" , ");
       }
-      if (newArray.getElements().size() > 1) // this was > 0, but I want to
-	removeLastChar();		     // throw an error for size==1
+      if (newArray.getElements().size() > 0)
+	removeLastChar();
       write(" )");
     }
+    exitCtExpression(newArray);
+  }
+
+  private <T> void visitNewByteArray(
+	CtNewArray<T> newArray, CtTypeReference ref) 
+  {
+    enterCtExpression(newArray);
+
+    if (ref != null)
+      write("new ");
+
+    write("ByteArray(");
+    if (newArray.getDimensionExpressions().size() > 0)
+      scan(newArray.getDimensionExpressions().get(0));
+    write(")");
+
+    if (newArray.getElements().size() > 0) {
+      write(" /* ");
+      for (CtExpression e : newArray.getElements()) {
+	scan(e);
+	write(" , ");
+      }
+      if (newArray.getElements().size() > 0)
+	removeLastChar();
+      write(" */");
+    }
+
     exitCtExpression(newArray);
   }
 
@@ -477,8 +529,12 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   public void visitCtAnonymousExecutable(CtAnonymousExecutable impl) {
     writeAnnotations(impl);
     writeModifiers(impl);
-    write("function jas$static" + (statics++) + "():void ");
+    write("private function jas$static" + statics + "():* ");
     impl.getBody().accept(this);
+    writeln();
+    write("static private const _jas$static" + statics 
+	+ ":* = jas$static" + statics + "();");
+    statics++;
   }
 
   public void visitCtSynchronized(CtSynchronized synchro) {

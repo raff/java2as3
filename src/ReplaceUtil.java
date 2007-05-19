@@ -54,21 +54,7 @@ public class ReplaceUtil
     reservedWords.add("is");
   }
 
-  static String replaceClass(Class c)
-  {
-    String name = typesMap.get(c);
-    if (null == name)
-      name = c.getName();
-
-    return name;
-  }
-
-  static CtTypeReference replaceType(Environment env, CtTypeReference t)
-  {
-    return replaceType(env.getFactory(), t);
-  }
-
-  static CtTypeReference replaceType(Factory f, CtTypeReference t)
+  static CtTypeReference replaceType(CtTypeReference t)
   {
     if (t != null) {
       String asName = null;
@@ -81,7 +67,7 @@ public class ReplaceUtil
       }
 
       if (asName != null)
-	t = f.Type().createReference(asName);
+	t = t.getFactory().Type().createReference(asName);
     }
 
     return t;
@@ -93,7 +79,7 @@ public class ReplaceUtil
   }
 
 	/**
-	 * Uses Fragment api to replace code
+	 * Uses Fragment API to replace code
 	 */
   static boolean replace(CtElement e, String replacement)
   {

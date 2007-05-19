@@ -12,7 +12,7 @@ public class NewClassProcessor extends AbstractProcessor<CtNewClass> {
 
     public void process(CtNewClass c) {
         
-      CtTypeReference t = ReplaceUtil.replaceType(getFactory(), c.getType());
+      CtTypeReference t = ReplaceUtil.replaceType(c.getType());
       c.setType(t);
     }
 }

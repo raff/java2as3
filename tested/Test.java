@@ -33,7 +33,7 @@ public class Test
 
   public void exec(String x) throws Exception
   {
-	java.util.Map m = new java.util.HashMap();
+	java.util.Map<String, String> m = new java.util.HashMap<String, String>();
 	if (m.put(x, x) == null)
 		throw new Exception("blah blah blah");
 
