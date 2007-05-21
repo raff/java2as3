@@ -58,12 +58,12 @@ public class Test
   private Float ff = new Float(3.14);
   private Double dd = new Double(ff);
 
-  private int another(Float f)
+  private double another(Float f)
   {
     int x[][] = new int[22][22];
     int y[] = { 1, 2, 3};
     int z[] = { 0 };
-    return (int) ((float) ((int) f));
+    return (double) ((Float) ((double) f));
   }
 
   public long currentTime() { return System.currentTimeMillis(); }
