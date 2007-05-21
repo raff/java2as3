@@ -42,6 +42,7 @@ public class ReplaceUtil
     typesMap.put(java.lang.Error.class,     "Error");
     typesMap.put(java.lang.Exception.class, "Error");
     typesMap.put(java.lang.RuntimeException.class, "Error");
+    typesMap.put(java.io.IOException.class, "IOError");
     typesMap.put(java.util.Date.class,      "Date");
     typesMap.put(java.util.Map.class,       "Object");
     typesMap.put(java.util.HashMap.class,   "Object");
