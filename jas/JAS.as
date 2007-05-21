@@ -1,5 +1,7 @@
 package jas {
 
+  import flash.utils.ByteArray;
+
   public class JAS {
 
     public static function initByteArray(...args) : ByteArray

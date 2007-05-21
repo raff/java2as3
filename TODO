@@ -5,3 +5,14 @@
 
 - Method overloading : should generate a method with a different name
   for different signatures. Can it use Java method naming conventions ?
+
+- java.lang.Integer.parseInt(s) -> parseInt(s)
+  and other number format conversions
+
+- String(charValue) -> String.fromCharCode(charValue)
+
+- String.toLowerCase() / String.toUpperCase()
+
+- String.trim() -> JAS.trim(s)
+
+- char - char -> int, not String
