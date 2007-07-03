@@ -16,3 +16,5 @@
 - String.trim() -> JAS.trim(s)
 
 - char - char -> int, not String
+
+- finalizer() -> throw error

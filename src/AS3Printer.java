@@ -62,7 +62,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	 * Print method definition
 	 */
   public <T> void visitCtMethod(CtMethod<T> m) {
-    //System.out.println("visit method " + m.getSimpleName());
+    //System.out.println("visit method " + m.getSignature());
 
     visitCtNamedElement(m);
     try {
@@ -265,7 +265,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     CtTypeReference cType = ((CtArrayTypeReference) ref).getComponentType();
 
     if (cType.getActualClass().equals(Byte.class)
-    || cType.getActualClass().equals(byte.class)) {
+    || cType.getActualClass().equals(Byte.TYPE)) {
       visitNewByteArray(newArray, ref);
       return; 
     }
