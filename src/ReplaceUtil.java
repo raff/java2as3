@@ -4,6 +4,7 @@ import spoon.reflect.Factory;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.*;
 import spoon.reflect.code.*;
+import spoon.reflect.cu.*;
 import java.util.*;
 
 public class ReplaceUtil

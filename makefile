@@ -1,7 +1,7 @@
 #!/bin/sh
 
 S := $(if $(shell uname|egrep "^CYG"),;,:)
-CP=lib/spoon-core-1.3-jar-with-dependencies.jar
+CP=lib/spoon-core-1.4-jar-with-dependencies.jar
 
 SRC=tested
 LIB=
