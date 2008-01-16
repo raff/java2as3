@@ -1,7 +1,7 @@
 #!/bin/sh
 SYSTEM=`uname`
 if [ `expr ${SYSTEM} : "^CYG"` -ne 0 ]; then
-  ASC="c:/Progra~1/Adobe/Flexbu~1/sdks/2.0.1/bin/compc"
+  ASC="c:/Progra~1/Adobe/Flexbu~1/Flexsd~1/bin/compc"
 else
   ASC="/Applications/Adobe Flex Builder 2/Flex SDK 2/bin/compc"
 fi
