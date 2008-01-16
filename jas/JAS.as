@@ -19,5 +19,10 @@ package jas {
       ba.length = length;
       return ba;
     }
+
+    public static function assert(...args) : void
+    {
+      trace("assert called...");
+    }
   }
 }

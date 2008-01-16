@@ -317,23 +317,40 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   {
     enterCtExpression(newArray);
 
-    if (ref != null)
-      write("new ");
+    if (ref == null) {
+      write("ByteArray(");
+      if (newArray.getDimensionExpressions().size() > 0)
+        scan(newArray.getDimensionExpressions().get(0));
+      write(")");
 
-    write("ByteArray(");
-    if (newArray.getDimensionExpressions().size() > 0)
-      scan(newArray.getDimensionExpressions().get(0));
-    write(")");
-
-    if (newArray.getElements().size() > 0) {
-      write(" /* ");
-      for (CtExpression e : newArray.getElements()) {
-	scan(e);
-	write(" , ");
+      if (newArray.getElements().size() > 0) {
+        write(" /* ");
+        for (CtExpression e : newArray.getElements()) {
+	  scan(e);
+	  write(" , ");
+        }
+        if (newArray.getElements().size() > 0)
+	  removeLastChar();
+        write(" */");
       }
-      if (newArray.getElements().size() > 0)
-	removeLastChar();
-      write(" */");
+    } else {
+      if (newArray.getDimensionExpressions().size() > 0
+      && newArray.getElements().size() == 0) {
+        write("jas.JAS.newByteArray(");
+        scan(newArray.getDimensionExpressions().get(0));
+        write(")");
+      }
+      else if (newArray.getElements().size() > 0) {
+        write("jas.JAS.initByteArray(");
+        for (CtExpression e : newArray.getElements()) {
+	  scan(e);
+	  write(" , ");
+        }
+        if (newArray.getElements().size() > 0)
+	  removeLastChar();
+        write(")");
+      } else
+        write("new ByteArray()");
     }
 
     exitCtExpression(newArray);
@@ -424,7 +441,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   public <T> void visitCtAssert(CtAssert<T> asserted) {
     enterCtStatement(asserted);
-    write("JAS.assert(");
+    write("jas.JAS.assert(");
     scan(asserted.getAssertExpression());
     if (asserted.getExpression() != null) {
 	write(", ");
