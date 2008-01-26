@@ -52,8 +52,19 @@ public class ReplaceUtil
 	/**
 	 * Reserved words
 	 */
+    reservedWords.add("dynamic");
+    reservedWords.add("get");
+    reservedWords.add("include");
+    reservedWords.add("internal");
+    reservedWords.add("native");
+    reservedWords.add("override");
+    reservedWords.add("each");
     reservedWords.add("in");
     reservedWords.add("is");
+    reservedWords.add("label");
+    reservedWords.add("namespace");
+    reservedWords.add("set");
+    reservedWords.add("var");
   }
 
   static CtTypeReference replaceType(CtTypeReference t)
