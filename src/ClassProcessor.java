@@ -19,8 +19,8 @@ System.out.println("==== " + c.getSimpleName() + " =================");
 		String name = m.getSimpleName();
 		if (name.equals(last)) {
 			n++;
-			m.setSimpleName(name + "_" + n);
-			m.getReference().setSimpleName(name + "_" + n);
+			m.setSimpleName(name + "$" + n);
+			m.getReference().setSimpleName(name + "$" + n);
 		} else {
 			n = 0;
 			last = name;

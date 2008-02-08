@@ -19,6 +19,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   Map<Integer, Integer> lineNumberMapping;
   int skipArray = 0;
   boolean noTypeDecl = false;
+  String lastClass = "";
 
   int line = 1;
   int statics = 1;
@@ -35,6 +36,10 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       t.accept(this);
     }
     return this;
+  }
+
+  public String hashName(String base, String ext) {
+    return base + "$" + Integer.toHexString(ext.hashCode());
   }
 
 	/**
@@ -141,15 +146,38 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   }
 
   public <T> void visitCtConstructor(CtConstructor<T> c) {
-    visitCtNamedElement(c);
+
+    CtClass<?> klass = (CtClass<?>) c.getDeclaringType();
+    String className = klass.getSimpleName();
+    String ctorName = null;
+    if (klass.getConstructors().size() > 1) {
+	if (! lastClass.equals(className)) {
+	    lastClass = className;
+
+	    writeln();
+	    write("// Constructor");
+	    writeln();
+            visitCtNamedElement(c);
+	    write("function " + className + "(f:Function, ...args) {");
+	    write(" f(rest);");
+	    write(" }");
+            writeln();
+            writeln();
+	}
+
+	className = hashName(className, c.getSignature());
+        write("private ");
+    } else
+        visitCtNamedElement(c);
+
     write("function ");
     writeGenericsParameter(c.getFormalTypeParameters());
-    write(c.getDeclaringType().getSimpleName());
+    write(className);
     write("(");
     if (c.getParameters().size() > 0) {
       for (CtParameter<?> p : c.getParameters()) {
 	visitCtParameter(p);
-	write(" ,");
+	write(", ");
       }
       removeLastChar();
     }
@@ -234,6 +262,75 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
         write(")");
       }
     }
+  }
+
+  private String overloadedConstructor(CtNewClass<?> newClass) {
+    CtConstructor<?> ctor = 
+      (CtConstructor<?>) newClass.getExecutable().getDeclaration();
+    if (ctor != null) {
+      CtClass<?> klass = (CtClass<?>) ctor.getDeclaringType();
+      if (klass.getConstructors().size() > 1)
+        return hashName(klass.getSimpleName(), ctor.getSignature());
+    }
+
+    return null;
+  }
+
+  public <T> void visitCtNewClass(CtNewClass<T> newClass) {
+    enterCtStatement(newClass);
+    enterCtExpression(newClass);
+
+    if (newClass.getTarget() != null)
+	    scan(newClass.getTarget()).write(".");
+
+    if (newClass.getAnonymousClass() != null) {
+	    write("new ");
+	    if (newClass.getAnonymousClass().getSuperclass() != null) {
+		    scan(newClass.getAnonymousClass().getSuperclass());
+	    } else if (newClass.getAnonymousClass().getSuperInterfaces().size() > 0) {
+		    for (CtTypeReference ref : newClass.getAnonymousClass()
+				    .getSuperInterfaces()) {
+			    scan(ref);
+		    }
+	    }
+	    write("(");
+	    for (CtExpression<?> exp : newClass.getArguments()) {
+		    scan(exp);
+		    write(", ");
+	    }
+	    if (newClass.getArguments().size() > 0)
+		    removeLastChar();
+	    write(")");
+	    scan(newClass.getAnonymousClass());
+    } else {
+	    write("new ").scan(newClass.getType());
+
+	    if (newClass.getExecutable() != null
+			    && newClass.getExecutable().getActualTypeArguments() != null) {
+		    writeGenericsParameter(newClass.getExecutable()
+				    .getActualTypeArguments());
+	    }
+	    write("(");
+	    String ct = overloadedConstructor(newClass);
+	    boolean remove = false;
+
+	    if (ct != null) {
+		write(ct);
+		if (newClass.getArguments().size() > 0)
+		    write(" , ");
+	    }
+
+	    for (CtCodeElement e : newClass.getArguments()) {
+		    scan(e);
+		    write(" , ");
+		    remove = true;
+	    }
+	    if (remove)
+		    removeLastChar();
+
+	    write(")");
+    }
+    exitCtExpression(newClass);
   }
 
   public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
