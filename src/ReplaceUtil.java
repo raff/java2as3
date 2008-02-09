@@ -52,6 +52,7 @@ public class ReplaceUtil
 	/**
 	 * Reserved words
 	 */
+    reservedWords.add("as");
     reservedWords.add("dynamic");
     reservedWords.add("get");
     reservedWords.add("include");
