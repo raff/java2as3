@@ -20,8 +20,8 @@ public class Java2AS3Processor extends AbstractProcessor<CtClass> {
         pm.addProcessor( new ClassProcessor() );
         pm.addProcessor( new VariableAccessProcessor() );
         pm.addProcessor( new VariableProcessor() );
-        pm.addProcessor( new NewArrayProcessor() );
-        //pm.addProcessor( new NewClassProcessor() );
+//        pm.addProcessor( new NewArrayProcessor() );
+//	pm.addProcessor( new NewClassProcessor() );
 
 	// must be last
         pm.addProcessor( new PrintProcessor() );
