@@ -4,11 +4,9 @@ S := $(if $(shell uname|egrep "^CYG"),;,:)
 CP=lib/spoon-core-1.4-jar-with-dependencies.jar
 
 SRC=tested
-LIB=
 
 JAR=Java2AS3.jar
-J2MECP=(S)lib/midpapi20.jar$(S)lib/cldapi11.jar$(S)lib/commons-math-1.1.jar
-RUNCP=$(CP)$(S)$(J2MECP)$(S)lib/junit-4.3.1.jar$(S)$(JAR)$(S)$(LIB)
+RUNCP=$(CP)$(S)$(JAR)
 
 jar: compile
 	cd classes; jar cvf ../$(JAR) *.class
