@@ -38,8 +38,11 @@ public class PrintProcessor extends AbstractProcessor<CtSimpleType> {
 	AS3Printer printer = new AS3Printer(getEnvironment());
 	printer.write("package " + packageName + "{");
 	printer.incTab().writeln();
-	printer.calculate(c.getPosition().getCompilationUnit(),
-		c.getPosition().getCompilationUnit().getDeclaredTypes());
+
+        List<CtSimpleType<?>> singleClass = new ArrayList<CtSimpleType<?>>();
+	singleClass.add(c);
+
+	printer.calculate(c.getPosition().getCompilationUnit(), singleClass);
 	printer.decTab().writeln().write("}");
 
 	try {
