@@ -157,8 +157,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	    writeln();
 	    write("// Constructor");
 	    writeln();
-            visitCtNamedElement(c);
-	    write("function " + className + "(f:Function, ...args) {");
+	    write("public function " + className + "(f:Function, ...args) {");
 	    write(" f(rest);");
 	    write(" }");
             writeln();
@@ -166,9 +165,9 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	}
 
 	className = hashName(className, c.getSignature());
-        write("private ");
-    } else
-        visitCtNamedElement(c);
+    }
+
+    visitCtNamedElement(c);
 
     write("function ");
     writeGenericsParameter(c.getFormalTypeParameters());
@@ -187,7 +186,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       write("throws ");
       for (CtTypeReference ref : c.getThrownTypes()) {
 	      scan(ref);
-	      write(" , ");
+	      write(", ");
       }
       removeLastChar();
       write(" ");
@@ -317,12 +316,12 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	    if (ct != null) {
 		write(ct);
 		if (newClass.getArguments().size() > 0)
-		    write(" , ");
+		    write(", ");
 	    }
 
 	    for (CtCodeElement e : newClass.getArguments()) {
 		    scan(e);
-		    write(" , ");
+		    write(", ");
 		    remove = true;
 	    }
 	    if (remove)
@@ -341,8 +340,15 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     */
 
     CtTypeReference cType = reference.getComponentType();
-    if (cType.getActualClass().equals(Byte.class)
-    || cType.getActualClass().equals(byte.class)) {
+    Class cClass =  null;
+    try {
+       cClass = cType.getActualClass();
+    } catch(Exception e) {
+       System.out.println("  " + e.getMessage());
+    }
+
+    if (cClass != null 
+       && (cClass.equals(Byte.class) || cClass.equals(byte.class))) {
        write("ByteArray");
        return; 
     }
@@ -360,11 +366,17 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
     CtTypeReference<?> ref = newArray.getType();
     CtTypeReference cType = ((CtArrayTypeReference) ref).getComponentType();
+    Class cClass = null;
+    try {
+       cClass = cType.getActualClass();
+    } catch(Exception e) {
+       System.out.println("  " + e.getMessage());
+    }
 
-    if (cType.getActualClass().equals(Byte.class)
-    || cType.getActualClass().equals(Byte.TYPE)) {
-      visitNewByteArray(newArray, ref);
-      return; 
+    if (cClass != null 
+       && (cClass.equals(Byte.class) || cClass.equals(byte.class))) {
+       visitNewByteArray(newArray, ref);
+       return; 
     }
 
     if (newArray.getElements().size() == 1) {
@@ -400,7 +412,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       write("( ");
       for (CtExpression e : newArray.getElements()) {
 	scan(e);
-	write(" , ");
+	write(", ");
       }
       if (newArray.getElements().size() > 0)
 	removeLastChar();
@@ -424,7 +436,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
         write(" /* ");
         for (CtExpression e : newArray.getElements()) {
 	  scan(e);
-	  write(" , ");
+	  write(", ");
         }
         if (newArray.getElements().size() > 0)
 	  removeLastChar();
@@ -441,7 +453,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
         write("jas.JAS.initByteArray(");
         for (CtExpression e : newArray.getElements()) {
 	  scan(e);
-	  write(" , ");
+	  write(", ");
         }
         if (newArray.getElements().size() > 0)
 	  removeLastChar();
@@ -481,15 +493,14 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   /**
    * Writes a binary operator.
-   *
+   */
   public AS3Printer writeOperator(BinaryOperatorKind o) {
     if (o == BinaryOperatorKind.INSTANCEOF) 
-      write("typeof");
+      write("is");
     else
       super.writeOperator(o);
     return this;
   }
-    */
 
   public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
     enterCtExpression(operator);
@@ -498,10 +509,13 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     if (paren)
       write("(");
    
+/*
     if (operator.getKind() != BinaryOperatorKind.INSTANCEOF) {
+*/
       scan(operator.getLeftHandOperand());
       write(" ").writeOperator(operator.getKind()).write(" ");
       scan(operator.getRightHandOperand());
+/*
     } else {
       write("typeof(");
       scan(operator.getLeftHandOperand());
@@ -509,7 +523,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       scan(operator.getRightHandOperand());
       write("\"");
     }
-
+*/
     if (paren)
       write(")");
     exitCtExpression(operator);
@@ -574,7 +588,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     write(" ; ");
     for (CtStatement s : forLoop.getForUpdate()) {
       scan(s);
-      write(" , ");
+      write(", ");
     }
     if (forLoop.getForUpdate().size() > 0)
       removeLastChar();
