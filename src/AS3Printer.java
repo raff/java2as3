@@ -196,15 +196,18 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   }
 
   public AS3Printer writeModifiers(CtModifiable m) {
+
+    boolean isStatic = m.getModifiers().contains(ModifierKind.STATIC);
+
     for (ModifierKind mod : m.getModifiers()) {
       String smod = mod.toString().toLowerCase();
       if ("abstract".equals(smod)
       || "synchronized".equals(smod)
       || ("final".equals(smod)
-	  && !(m instanceof CtMethod 
-		|| m instanceof CtClass 
+	  && ( !(m instanceof CtClass 
 		|| m instanceof CtField
-		|| m instanceof CtLocalVariable)))
+		|| m instanceof CtLocalVariable)
+             || !(m instanceof CtMethod && isStatic))))
         write("/*" + smod + "*/ ");
       else if ("final".equals(smod) 
 	&& (m instanceof CtLocalVariable || m instanceof CtField))
