@@ -149,7 +149,6 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
     CtClass<?> klass = (CtClass<?>) c.getDeclaringType();
     String className = klass.getSimpleName();
-    String ctorName = null;
     if (klass.getConstructors().size() > 1) {
 	if (! lastClass.equals(className)) {
 	    lastClass = className;
