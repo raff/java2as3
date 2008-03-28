@@ -158,7 +158,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	    write("// Constructor");
 	    writeln();
 	    write("public function " + className + "(f:Function, ...args) {");
-	    write(" f(rest);");
+	    write(" f(args);");
 	    write(" }");
             writeln();
             writeln();
