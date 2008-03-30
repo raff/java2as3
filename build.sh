@@ -6,7 +6,7 @@ else
   ASC="/Applications/Adobe Flex Builder 3/Flex SDK 3/bin/compc"
 fi
 
-cp -r jas as3
+#cp -r jas as3
 
 l=`find as3 -name "*.as" | sed -e 's/^as3.//' -e 's/.as$//' -e 's/\//./g'`
 "${ASC}" -compiler.incremental -compiler.source-path=as3 -include-sources=jas -output=as3.swc -include-classes $l

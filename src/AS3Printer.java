@@ -307,7 +307,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	    write("new ").scan(newClass.getType());
 
 	    if (newClass.getExecutable() != null
-			    && newClass.getExecutable().getActualTypeArguments() != null) {
+		    && newClass.getExecutable().getActualTypeArguments() != null) {
 		    writeGenericsParameter(newClass.getExecutable()
 				    .getActualTypeArguments());
 	    }
@@ -477,6 +477,63 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   public AS3Printer writeThrowsClause(CtExecutable<?> e) {
 	return this;
+  }
+
+  public <T> void visitCtInvocation(CtInvocation<T> invocation) {
+    enterCtStatement(invocation);
+    enterCtExpression(invocation);
+    if (invocation.getExecutable().getSimpleName().equals("<init>")) {
+	// It's a constructor (super or this)
+	CtType<?> parentType = invocation.getParent(CtType.class);
+	if ((parentType != null)
+	    && (parentType.getQualifiedName() != null)
+	    && parentType.getQualifiedName().equals(
+		invocation.getExecutable().getDeclaringType()
+					    .getQualifiedName())) {
+	    write("this");
+	} else {
+	    write("super");
+	}
+    } else {
+	// It's a method invocation
+	if (invocation.getExecutable().isStatic()) {
+		String replaced = ReplaceUtil.replaceMethodInvocation(invocation);
+		if (null != replaced)
+			write(replaced);
+		else {
+		    CtTypeReference<?> type = invocation.getExecutable()
+			.getDeclaringType();
+
+
+		    //if (isHiddenByField(invocation.getParent(CtType.class), type)) {
+		    //	importsContext.imports.remove(type.getSimpleName());
+		    //}
+		    //context.ignoreGenerics = true;
+		    scan(type);
+		    //context.ignoreGenerics = false;
+		    write(".");
+	            write(invocation.getExecutable().getSimpleName());
+		}
+	} else if (invocation.getTarget() != null) {
+		//context.enterTarget();
+		scan(invocation.getTarget());
+		//context.exitTarget();
+		write(".");
+	        write(invocation.getExecutable().getSimpleName());
+	}
+    }
+    write("(");
+    boolean remove = false;
+    for (CtExpression<?> e : invocation.getArguments()) {
+	scan(e);
+	write(", ");
+	remove = true;
+    }
+    if (remove) {
+	removeLastChar();
+    }
+    write(")");
+    exitCtExpression(invocation);
   }
 
   public <T> void visitCtLiteral(CtLiteral<T> literal) {

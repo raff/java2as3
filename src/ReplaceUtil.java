@@ -10,6 +10,7 @@ import java.util.*;
 public class ReplaceUtil
 {
   static final Map<Class, String> typesMap = new HashMap();
+  static final Map<String, String> methodsMap = new HashMap();
   static final Set<String> reservedWords = new HashSet();
 
   static {
@@ -66,6 +67,17 @@ public class ReplaceUtil
     reservedWords.add("namespace");
     reservedWords.add("set");
     reservedWords.add("var");
+
+	/**
+	 * Static methods
+	 */
+    methodsMap.put("java.lang.Integer.parseInt",   "parseInt");
+    methodsMap.put("java.lang.Long.parseLong",     "parseInt");
+    methodsMap.put("java.lang.Float.parseFloat",   "parseFloat");
+    methodsMap.put("java.lang.Double.parseDouble", "parseFloat");
+    methodsMap.put("java.lang.Float.isNaN",        "isNaN");
+    methodsMap.put("java.lang.Double.isNaN",       "isNaN");
+    methodsMap.put("java.lang.System.currentTimeMillis", "(new Date()).getTime");
   }
 
   static CtTypeReference replaceType(CtTypeReference t)
@@ -85,6 +97,15 @@ public class ReplaceUtil
     }
 
     return t;
+  }
+
+  static String replaceMethodInvocation(CtInvocation invocation)
+  {
+	String fullName = 
+		invocation.getExecutable().getDeclaringType().toString() 
+		    + "." + invocation.getExecutable().getSimpleName();
+
+	return methodsMap.get(fullName);
   }
 
   static boolean isReserved(String name)

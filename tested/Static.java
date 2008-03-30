@@ -19,4 +19,10 @@ public class Static {
 
     System.out.println(x);
   }
+
+  public void testInvocation()
+  {
+	System.out.println(Integer.parseInt("22"));
+	System.out.println(Integer.parseInt("AA", 16));
+  }
 }
