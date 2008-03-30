@@ -54,19 +54,24 @@ public class ReplaceUtil
 	 * Reserved words
 	 */
     reservedWords.add("as");
-    reservedWords.add("dynamic");
+    reservedWords.add("in");
+    reservedWords.add("is");
+    reservedWords.add("each");
+    reservedWords.add("with");
     reservedWords.add("get");
-    reservedWords.add("include");
+    reservedWords.add("set");
+    reservedWords.add("var");
+    reservedWords.add("label");
+    reservedWords.add("dynamic");
     reservedWords.add("internal");
     reservedWords.add("native");
     reservedWords.add("override");
-    reservedWords.add("each");
-    reservedWords.add("in");
-    reservedWords.add("is");
-    reservedWords.add("label");
+    reservedWords.add("const");
+    reservedWords.add("function");
+    reservedWords.add("interface");
     reservedWords.add("namespace");
-    reservedWords.add("set");
-    reservedWords.add("var");
+    reservedWords.add("include");
+    reservedWords.add("use");
 
 	/**
 	 * Static methods
