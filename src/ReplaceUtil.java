@@ -72,6 +72,10 @@ public class ReplaceUtil
     reservedWords.add("namespace");
     reservedWords.add("include");
     reservedWords.add("use");
+    reservedWords.add("NaN");
+    reservedWords.add("Infinity");
+    reservedWords.add("undefined");
+    reservedWords.add("Null");
 
 	/**
 	 * Static methods
