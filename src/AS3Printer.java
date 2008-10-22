@@ -482,6 +482,8 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   public <T> void visitCtInvocation(CtInvocation<T> invocation) {
     enterCtStatement(invocation);
     enterCtExpression(invocation);
+
+//System.out.println("visit Invocation " + invocation.getExecutable().getSimpleName());
     if (invocation.getExecutable().getSimpleName().equals("<init>")) {
 	// It's a constructor (super or this)
 	CtType<?> parentType = invocation.getParent(CtType.class);
@@ -519,8 +521,14 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 		scan(invocation.getTarget());
 		//context.exitTarget();
 		write(".");
-	        write(invocation.getExecutable().getSimpleName());
-	}
+
+		String replaced = ReplaceUtil.replaceMethodInvocation(invocation);
+		if (null != replaced)
+			write(replaced);
+		else
+	        	write(invocation.getExecutable().getSimpleName());
+	} else
+		write(invocation.getExecutable().getSimpleName());
     }
     write("(");
     boolean remove = false;

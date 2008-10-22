@@ -50,6 +50,9 @@ public class ReplaceUtil
     typesMap.put(java.util.HashMap.class,   "Object");
     typesMap.put(java.util.Hashtable.class, "Object");
 
+    typesMap.put(java.lang.StringBuffer.class,  "String");
+    typesMap.put(java.lang.StringBuilder.class, "String");
+
 	/**
 	 * Reserved words
 	 */
@@ -78,7 +81,7 @@ public class ReplaceUtil
     reservedWords.add("Null");
 
 	/**
-	 * Static methods
+	 * Methods
 	 */
     methodsMap.put("java.lang.Integer.parseInt",   "parseInt");
     methodsMap.put("java.lang.Long.parseLong",     "parseInt");
@@ -87,6 +90,8 @@ public class ReplaceUtil
     methodsMap.put("java.lang.Float.isNaN",        "isNaN");
     methodsMap.put("java.lang.Double.isNaN",       "isNaN");
     methodsMap.put("java.lang.System.currentTimeMillis", "(new Date()).getTime");
+    methodsMap.put("java.lang.StringBuffer.append", "concat");
+    methodsMap.put("java.lang.StringBuilder.append", "concat");
   }
 
   static CtTypeReference replaceType(CtTypeReference t)
