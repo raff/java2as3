@@ -72,7 +72,9 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     visitCtNamedElement(m);
     try {
       if (m.getReference().getOverridingExecutable() != null)
-        write("override ");
+	// most of the time this override will complain
+        if (! m.getSimpleName().equals("toString"))
+           write("override ");
     } catch(Exception e) {
 	System.out.println("  getOverride error: " + e.getMessage());
     }
