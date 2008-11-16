@@ -522,13 +522,16 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 		//context.enterTarget();
 		scan(invocation.getTarget());
 		//context.exitTarget();
-		write(".");
 
 		String replaced = ReplaceUtil.replaceMethodInvocation(invocation);
-		if (null != replaced)
+		if (null != replaced) {
+			if (! replaced.startsWith(" "))
+				write(".");
 			write(replaced);
-		else
+		} else {
+			write(".");
 	        	write(invocation.getExecutable().getSimpleName());
+		}
 	} else
 		write(invocation.getExecutable().getSimpleName());
     }

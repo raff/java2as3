@@ -91,10 +91,9 @@ public class ReplaceUtil
     methodsMap.put("java.lang.Float.isNaN",        "isNaN");
     methodsMap.put("java.lang.Double.isNaN",       "isNaN");
     methodsMap.put("java.lang.System.currentTimeMillis", "(new Date()).getTime");
-/*
-    methodsMap.put("java.lang.StringBuffer.append", "concat");
-    methodsMap.put("java.lang.StringBuilder.append", "concat");
- */
+    methodsMap.put("java.lang.StringBuffer.append", " += ");
+    methodsMap.put("java.lang.StringBuilder.append", " += ");
+    methodsMap.put("java.lang.String.equals", " == ");
     methodsMap.put("java.util.ArrayList.add", "push");
   }
 
