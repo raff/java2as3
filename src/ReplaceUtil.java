@@ -51,6 +51,8 @@ public class ReplaceUtil
     typesMap.put(java.util.Hashtable.class, "Object");
     typesMap.put(java.util.ArrayList.class, "Array");
 
+    typesMap.put(java.lang.Math.class,  "Math");
+
     typesMap.put(java.lang.StringBuffer.class,  "String");
     typesMap.put(java.lang.StringBuilder.class, "String");
 
