@@ -1,7 +1,5 @@
 
 import spoon.processing.Environment;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.*;
 import spoon.reflect.code.*;
 import spoon.reflect.visitor.*;
 import spoon.reflect.declaration.*;
@@ -14,8 +12,7 @@ import java.util.*;
  */
 public class AS3Printer extends DefaultJavaPrettyPrinter {
 
-  private Environment env;
-  Stack<CtExpression> parenthesedExpression = new Stack<CtExpression>();
+  Stack<CtExpression<?>> parenthesedExpression = new Stack<CtExpression<?>>();
   Map<Integer, Integer> lineNumberMapping;
   int skipArray = 0;
   boolean noTypeDecl = false;
@@ -26,11 +23,22 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
   AS3Printer(Environment env) {
     super(env);
-    this.env = env;
     this.lineNumberMapping = super.getLineNumberMapping();
   }
 
-  public AS3Printer scan(CtTypeReference t) {
+  /**
+   * some times scan(CtTypeRefernce) gets here
+   * i.e. for new <class>()
+   */
+  public AS3Printer scan(CtReference r) {
+    if (r instanceof CtTypeReference)
+      return scan((CtTypeReference<?>) r);
+
+    super.scan(r);
+    return this;
+  }
+  
+  public AS3Printer scan(CtTypeReference<?> t) {
     if (t != null) {
       t = ReplaceUtil.replaceType(t);
       t.accept(this);
@@ -246,7 +254,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     }
 
     if (!e.getTypeCasts().isEmpty()) {
-      for (CtTypeReference r : e.getTypeCasts()) {
+      for (CtTypeReference<?> r : e.getTypeCasts()) {
 	write("(");
       }
     }
@@ -259,7 +267,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     while (parenthesedExpression.size() > 0
       && e.equals(parenthesedExpression.peek())) {
       parenthesedExpression.pop();
-      for (CtTypeReference r : e.getTypeCasts()) {
+      for (CtTypeReference<?> r : e.getTypeCasts()) {
         write(" as ");
         scan(r);
         write(")");
@@ -291,7 +299,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 	    if (newClass.getAnonymousClass().getSuperclass() != null) {
 		    scan(newClass.getAnonymousClass().getSuperclass());
 	    } else if (newClass.getAnonymousClass().getSuperInterfaces().size() > 0) {
-		    for (CtTypeReference ref : newClass.getAnonymousClass()
+		    for (CtTypeReference<?> ref : newClass.getAnonymousClass()
 				    .getSuperInterfaces()) {
 			    scan(ref);
 		    }
@@ -343,8 +351,8 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       write("[]");
     */
 
-    CtTypeReference cType = reference.getComponentType();
-    Class cClass =  null;
+    CtTypeReference<?> cType = reference.getComponentType();
+    Class<?> cClass =  null;
     try {
        cClass = cType.getActualClass();
     } catch(Exception e) {
@@ -426,7 +434,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   }
 
   private <T> void visitNewByteArray(
-	CtNewArray<T> newArray, CtTypeReference ref) 
+	CtNewArray<T> newArray, CtTypeReference<?> ref) 
   {
     enterCtExpression(newArray);
 
@@ -438,7 +446,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
       if (newArray.getElements().size() > 0) {
         write(" /* ");
-        for (CtExpression e : newArray.getElements()) {
+        for (CtExpression<?> e : newArray.getElements()) {
 	  scan(e);
 	  write(", ");
         }
@@ -455,7 +463,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       }
       else if (newArray.getElements().size() > 0) {
         write("jas.JAS.initByteArray(");
-        for (CtExpression e : newArray.getElements()) {
+        for (CtExpression<?> e : newArray.getElements()) {
 	  scan(e);
 	  write(", ");
         }
@@ -567,7 +575,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   public <T> void visitCtLiteral(CtLiteral<T> literal) {
     if (literal.getValue() instanceof CtTypeReference) {
       enterCtExpression(literal);
-      scan((CtTypeReference) literal.getValue());
+      scan((CtTypeReference<?>) literal.getValue());
       exitCtExpression(literal);
     } else if (literal.getValue() instanceof Long) {
       write(literal.getValue().toString()); // + "L");
@@ -730,7 +738,7 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
     if ( params.size() > 0) {
       write("/*");
       //context.ignoreImport = true;
-      for (CtTypeReference param : params) {
+      for (CtTypeReference<?> param : params) {
     scan(param);
     write(", ");
       }
