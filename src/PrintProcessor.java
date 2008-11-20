@@ -1,21 +1,17 @@
 
 import spoon.processing.AbstractProcessor;
-import spoon.processing.TraversalStrategy;
 import spoon.reflect.declaration.*;
-import spoon.reflect.visitor.*;
-import spoon.reflect.code.*;
-import spoon.support.*;
 
 import java.io.*;
 import java.util.*;
 
 /**
  * This processor replaces variable (local variables, parameters and fields)
- * declarations with a J2ME compliant equivalent declaration.
+ * declarations with an AS3 compliant equivalent declaration.
  */
-public class PrintProcessor extends AbstractProcessor<CtSimpleType> {
+public class PrintProcessor extends AbstractProcessor<CtSimpleType<?>> {
 
-    public void process(CtSimpleType c) {
+    public void process(CtSimpleType<?> c) {
         if (!c.isTopLevel())
 	  return;
 

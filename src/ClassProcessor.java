@@ -2,14 +2,14 @@
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.*;
 
-public class ClassProcessor extends AbstractProcessor<CtClass> {
+public class ClassProcessor extends AbstractProcessor<CtClass<?>> {
 
     public void init()
     {
         super.init();
     }
 
-    public void process(CtClass c) {
+    public void process(CtClass<?> c) {
         
 	int n = 0;
 	String last = "";

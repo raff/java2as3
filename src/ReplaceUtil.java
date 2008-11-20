@@ -1,6 +1,4 @@
 
-import spoon.processing.Environment;
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.*;
 import spoon.reflect.code.*;
@@ -9,9 +7,9 @@ import java.util.*;
 
 public class ReplaceUtil
 {
-  static final Map<Class, String> typesMap = new HashMap();
-  static final Map<String, String> methodsMap = new HashMap();
-  static final Set<String> reservedWords = new HashSet();
+  static final Map<Class<?>, String> typesMap = new HashMap<Class<?>, String>();
+  static final Map<String, String> methodsMap = new HashMap<String, String>();
+  static final Set<String> reservedWords = new HashSet<String>();
 
   static {
 	/**
@@ -109,13 +107,13 @@ public class ReplaceUtil
     methodsMap.put("java.util.ArrayList.add", "push");
   }
 
-  static CtTypeReference replaceType(CtTypeReference t)
+  static CtTypeReference<?> replaceType(CtTypeReference<?> t)
   {
     if (t != null) {
       String asName = null;
 
       try {
- 	Class c = t.getActualClass();
+ 	Class<?> c = t.getActualClass();
         asName = typesMap.get(c);
       } catch(Exception e) {
 	// follow through
@@ -128,7 +126,7 @@ public class ReplaceUtil
     return t;
   }
 
-  static String replaceMethodInvocation(CtInvocation invocation)
+  static String replaceMethodInvocation(CtInvocation<?> invocation)
   {
 	String fullName = 
 		invocation.getExecutable().getDeclaringType().toString() 

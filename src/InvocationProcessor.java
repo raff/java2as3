@@ -2,14 +2,14 @@
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
 
-public class InvocationProcessor extends AbstractProcessor<CtInvocation> {
+public class InvocationProcessor extends AbstractProcessor<CtInvocation<?>> {
 
     public void init()
     {
         super.init();
     }
 
-    public void process(CtInvocation v) {
+    public void process(CtInvocation<?> v) {
         
 	System.out.printf("invoke %s %s\n" 
 		, v.getExecutable().getDeclaringType().getSimpleName(), v.getExecutable().getSimpleName());

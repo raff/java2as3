@@ -10,7 +10,7 @@ import spoon.reflect.declaration.CtClass;
  * the other processor which will be perform the real job. This processor is
  * just the entry point of the translation process.
  */
-public class Java2AS3Processor extends AbstractProcessor<CtClass> {
+public class Java2AS3Processor extends AbstractProcessor<CtClass<?>> {
     
     public void init() {
         
@@ -28,9 +28,9 @@ public class Java2AS3Processor extends AbstractProcessor<CtClass> {
         pm.addProcessor( new PrintProcessor() );
     }
 
-    public boolean isToBeProcessed( CtClass ct ) {
+    public boolean isToBeProcessed( CtClass<?> ct ) {
         return false;
     }
-    public void process( CtClass ct ) {
+    public void process( CtClass<?> ct ) {
     }
 }
