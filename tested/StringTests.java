@@ -29,4 +29,14 @@ class StringTests
 	{
 		return sb.toString();
 	}
+
+	static StringBuffer newStringBuffer()
+	{
+		return new StringBuffer();
+	}
+
+	static StringBuilder newStringBuilder()
+	{
+		return new StringBuilder();
+	}
 }
