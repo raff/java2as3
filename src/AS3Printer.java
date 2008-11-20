@@ -482,6 +482,10 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
   }
 
   public <T> void visitCtInvocation(CtInvocation<T> invocation) {
+
+    boolean skipBrakets = false;
+    boolean skipArguments = false;
+
     enterCtStatement(invocation);
     enterCtExpression(invocation);
 
@@ -525,27 +529,38 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
 
 		String replaced = ReplaceUtil.replaceMethodInvocation(invocation);
 		if (null != replaced) {
-			if (! replaced.startsWith(" "))
-				write(".");
-			write(replaced);
-		} else {
+                    if (replaced.length() == 0)
+			skipArguments = true;
+
+		    else if (replaced.charAt(0) == ' ')
+		        skipBrakets = true;
+
+		    else
 			write(".");
-	        	write(invocation.getExecutable().getSimpleName());
+
+		    write(replaced);
+		} else {
+		    write(".");
+		    write(invocation.getExecutable().getSimpleName());
 		}
 	} else
 		write(invocation.getExecutable().getSimpleName());
     }
-    write("(");
-    boolean remove = false;
-    for (CtExpression<?> e : invocation.getArguments()) {
-	scan(e);
-	write(", ");
-	remove = true;
+
+    if (! skipArguments) {
+        if (! skipBrakets) write("(");
+        boolean remove = false;
+        for (CtExpression<?> e : invocation.getArguments()) {
+	    scan(e);
+	    write(", ");
+	    remove = true;
+        }
+        if (remove) {
+	    removeLastChar();
+        }
+        if (! skipBrakets) write(")");
     }
-    if (remove) {
-	removeLastChar();
-    }
-    write(")");
+
     exitCtExpression(invocation);
   }
 

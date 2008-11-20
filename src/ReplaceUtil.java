@@ -84,7 +84,7 @@ public class ReplaceUtil
     reservedWords.add("Null");
 
 	/**
-	 * Methods
+	 * AS3 Global Methods
 	 */
     methodsMap.put("java.lang.Integer.parseInt",   "parseInt");
     methodsMap.put("java.lang.Long.parseLong",     "parseInt");
@@ -92,9 +92,19 @@ public class ReplaceUtil
     methodsMap.put("java.lang.Double.parseDouble", "parseFloat");
     methodsMap.put("java.lang.Float.isNaN",        "isNaN");
     methodsMap.put("java.lang.Double.isNaN",       "isNaN");
+
+	/**
+	 * Date stuff
+	 */
     methodsMap.put("java.lang.System.currentTimeMillis", "(new Date()).getTime");
+
+	/**
+	 * Others
+	 */
     methodsMap.put("java.lang.StringBuffer.append", " += ");
     methodsMap.put("java.lang.StringBuilder.append", " += ");
+    methodsMap.put("java.lang.StringBuffer.toString", "");
+    methodsMap.put("java.lang.StringBuilder.toString", "");
     methodsMap.put("java.lang.String.equals", " == ");
     methodsMap.put("java.util.ArrayList.add", "push");
   }

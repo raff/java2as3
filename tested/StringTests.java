@@ -10,8 +10,23 @@ class StringTests
 		return s1.equalsIgnoreCase(s2);
 	}
 
+	static void append(StringBuffer sb, String s)
+	{
+		sb.append(s);
+	}
+
 	static void append(StringBuilder sb, String s)
 	{
 		sb.append(s);
+	}
+
+	static String SBtoString(StringBuffer sb) 
+	{
+		return sb.toString();
+	}
+
+	static String SBtoString(StringBuilder sb) 
+	{
+		return sb.toString();
 	}
 }
