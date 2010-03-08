@@ -1,0 +1,55 @@
+<project name="Java2AS3" default="package">
+
+    <property name="debug"       value="true" />
+    <property name="package.jar" value="Java2AS3.jar" />
+    <property name="package.mf"  value="package.mf" />
+
+    <property name="basedir"     value="." />
+    <property name="one-jar.dist.dir" value="${basedir}/one-jar" />
+
+    <property name="src.dir"   location="${basedir}/src" />
+    <property name="build.dir" location="${basedir}/classes" />
+    <property name="lib.dir"   location="${basedir}/lib" />
+     
+    <import file="${one-jar.dist.dir}/one-jar-ant-task.xml"/>   
+
+    <target name="init">
+        <delete includeemptydirs="true" failonerror="false">
+          <fileset dir="${build.dir}" includes="**/*" />
+    	</delete>
+        <mkdir dir="${build.dir}"/>
+    </target>
+
+    <target name="package" depends="init">
+
+	<!-- Build classes for main.jar -->   
+	<javac destdir="${build.dir}" target="1.5" debug="${debug}">
+	    <src path="${src.dir}" />
+	    <classpath>
+		<fileset dir="${lib.dir}">
+		    <include name="**/*.jar" />
+		</fileset>
+	    </classpath>
+	</javac>
+
+	<!-- Construct the One-JAR file -->   
+	<one-jar destfile="${package.jar}" manifest="${package.mf}">
+	    <!-- Construct main.jar from classes and source code -->
+	    <main>
+	    	<fileset dir="${build.dir}"/>
+	    	<fileset file="${lib.dir}/*.properties" />
+	    </main>
+	    <lib>
+		<fileset dir="${lib.dir}">
+		    <include name="**/*.jar" />
+		</fileset>
+	    </lib>
+	</one-jar> 
+	<echo>
+	  Now you can run the application using
+	  $ java -jar Java2AS3.jar
+	</echo>   
+	   
+    </target>
+
+</project>
