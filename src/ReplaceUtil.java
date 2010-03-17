@@ -126,6 +126,16 @@ public class ReplaceUtil
     return t;
   }
 
+  static boolean isReplaced(CtTypeReference<?> t)
+  {
+      try {
+ 	Class<?> c = t.getActualClass();
+	return typesMap.containsKey(c);
+      } catch(Exception e) {
+	return false;
+      }
+  }
+
   static String replaceMethodInvocation(CtInvocation<?> invocation)
   {
 	String fullName = 

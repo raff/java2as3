@@ -629,6 +629,10 @@ public class AS3Printer extends DefaultJavaPrettyPrinter {
       CtPackage pack = types.get(0).getPackage();
       //scan(pack).writeln().writeln();
       for (CtTypeReference<?> ref : getImports()) {
+	// ignore replaced types
+	if (ReplaceUtil.isReplaced(ref))
+		continue;
+
 	// ignore non-top-level type
 	if (ref.getPackage() != null) {
 	  // ignore java.lang package
