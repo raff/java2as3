@@ -1,4 +1,4 @@
-package tested;
+package tests;
 
 class Test2 extends Test
 {
