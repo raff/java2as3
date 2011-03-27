@@ -3,6 +3,7 @@ Convert Java source code to ActionScript 3
 * Convert java syntax to ActionScript syntax (i.e. 'int i=0;' becomes 'var i:int=0;'
 * Convert basic java objects to ActionScript equivalents (native types, String, Exception, Map, etc.)
 * Convert overloaded methods to "uniquely named" methods (original-name$hash)
+* Convert variable names that are ActionScript reserved words to non-reserved words (i.e. 'in' becomes 'jas$in')
 * etc.
 
 To build, just run ant.  A single "executable" jar file will be produced, that can be run as:
