@@ -10,14 +10,22 @@
     <property name="src.dir"   location="${basedir}/src" />
     <property name="build.dir" location="${basedir}/classes" />
     <property name="lib.dir"   location="${basedir}/lib" />
+    <property name="test.dir"  location="${basedir}/tests" />
+    <property name="output.dir"  location="${basedir}/as3" />
      
-    <import file="${one-jar.dist.dir}/one-jar-ant-task.xml"/>   
+    <import file="${one-jar.dist.dir}/one-jar-ant-task.xml" />   
 
-    <target name="init">
-        <delete includeemptydirs="true" failonerror="false">
-          <fileset dir="${build.dir}" includes="**/*" />
-    	</delete>
-        <mkdir dir="${build.dir}"/>
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+
+    <target name="dist-clean" depends="clean">
+	<delete dir="${output.dir}" />
+	<delete file="${package.jar}" failonerror="false" />
+    </target>
+
+    <target name="init" depends="clean">
+        <mkdir dir="${build.dir}" />
     </target>
 
     <target name="package" depends="init">
@@ -36,7 +44,7 @@
 	<one-jar destfile="${package.jar}" manifest="${package.mf}">
 	    <!-- Construct main.jar from classes and source code -->
 	    <main>
-	    	<fileset dir="${build.dir}"/>
+	    	<fileset dir="${build.dir}" />
 	    	<fileset file="${lib.dir}/*.properties" />
 	    </main>
 	    <lib>
@@ -47,9 +55,22 @@
 	</one-jar> 
 	<echo>
 	  Now you can run the application using
-	  $ java -jar Java2AS3.jar
+	  $ java -jar ${package.jar} -s {java-source-dir}
 	</echo>   
 	   
+    </target>
+
+    <target name="test">
+       <java jar="${package.jar}" fork="true">
+	   <jvmarg value="-Xmx512m" />
+	   <arg value="-i" />
+	   <arg value="${test.dir}" />
+       </java>
+
+       <echo>
+	  The converted files should be in the folder ${output.dir}
+       </echo>
+	       
     </target>
 
 </project>
