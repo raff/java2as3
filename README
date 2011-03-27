@@ -1,0 +1,18 @@
+Convert Java source code to ActionScript 3
+
+* Convert java syntax to ActionScript syntax (i.e. 'int i=0;' becomes 'var i:int=0;'
+* Convert basic java objects to ActionScript equivalents (native types, String, Exception, Map, etc.)
+* Convert overloaded methods to "uniquely named" methods (original-name$hash)
+* etc.
+
+To build, just run ant.  A single "executable" jar file will be produced, that can be run as:
+
+	java -jar Java2AS3.jar -i <java-source-dir>
+
+Where <java-source-dir> is a folder containing the original java source code.
+
+After building you can run some tests as:
+
+	ant test
+
+The resulting ActionScript files are in the as3 folder.
